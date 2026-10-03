@@ -12,12 +12,12 @@ The final `npm run check` passes:
 
 All five enabled AIslop engines ran. Three non-blocking maintainability warnings remain: the SVG scene-art file and renderer are large, and the character-rig constructor is long. The score is 97 when AIslop includes the development dependency advisory, and 98 when the audit response omits it. No AIslop rules, weights, thresholds, or application-source exclusions were weakened to pass its gate. Do not use `npm audit fix --force`: its suggested AIslop downgrade is not a verified fix.
 
-## CI and Pages readiness
+## CI and Pages deployment
 
 `.github/workflows/pages.yml` follows the `coin-quest` and `skater-dudes` reference workflows. It uses pinned actions, Node.js 24, Chrome browser tests, the 95-point AIslop gate, and a separate full dependency audit. Successful `main` runs deploy only the complete tested build. Pull requests never deploy.
 
 - **Actionlint passed** for the workflow.
-- **105 unit tests and 26 Chrome browser tests passed** with the workflow files present.
+- **142 unit tests and 26 Chrome browser tests passed** in the latest GitHub-hosted Linux run.
 - **Production build passed**, including the verified local model and worker adapters.
 - **Quality-report JSON parses correctly** and retains the scan findings.
 
@@ -29,7 +29,21 @@ The owner then approved a seven-day exception for this advisory only. `npm run c
 
 An independent review found that inherited npm settings could omit development findings from the full audit. The runner now explicitly includes development, optional, and peer dependencies. A manual check with both `NODE_ENV=production` and `npm_config_omit=dev` still reports all three approved entries and a clean production audit.
 
-Expiry blocks future deployments, not an already deployed site. No successful deployment has been verified yet.
+Expiry blocks future deployments, not an already deployed site.
+
+[The final GitHub-hosted Linux run](https://github.com/codesoda/bluedog-scratch/actions/runs/37087015398) passed **142 unit tests**, **26 Chrome browser tests**, the production build, AIslop at **97/100**, and the scoped audit policy. The raw full audit retains the three approved development entries. The production audit reports **zero vulnerabilities**. Pages deployed successfully.
+
+The live site at **https://codesoda.github.io/bluedog-scratch/** returns HTTP 200. A hosted Chrome smoke test verifies:
+
+- Normal startup keeps the camera off and exposes no debug interface.
+- The synthetic camera starts local worker inference at the actual repository path.
+- The model, WASM, and module-loader adapter load from the same host.
+- The downloaded model matches the pinned SHA-256.
+- WASM and module-loader MIME types are valid.
+- Adult camera stop releases tracking.
+- No page errors or third-party requests occur.
+
+These checks use Chrome's synthetic camera, not a real hand.
 
 ## Browser coverage
 
@@ -74,4 +88,4 @@ The five-year-old success criteria still need a family playtest. Tune scratch tr
 
 Desktop Chrome is the verified browser. Safari, Firefox, Edge, mobile, real camera unplugging, and genuine browser back/forward-cache restoration need separate testing. The cache test dispatches lifecycle events rather than performing a real cached navigation.
 
-The owner approved public publication of the family prototype. This does not establish character-rights clearance. No successful Pages deployment has been verified yet.
+The owner approved public publication of the family prototype, and Pages deployment is verified. This does not establish character-rights clearance.

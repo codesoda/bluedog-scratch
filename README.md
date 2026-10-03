@@ -71,7 +71,7 @@ Only successful `main` runs can deploy. The workflow uploads the complete tested
 
 To enable deployment in the GitHub repository, select **Settings → Pages → Build and deployment → Source → GitHub Actions**, then push to `main` or run the workflow. Relative asset paths support a repository site without hardcoding its name. The site needs HTTPS for camera access.
 
-The public repository is [codesoda/bluedog-scratch](https://github.com/codesoda/bluedog-scratch). The game is live at **https://codesoda.github.io/bluedog-scratch/**. GitHub Actions checks and deploys it. The live Chrome smoke test verifies startup, local worker inference with a synthetic camera, and camera stop.
+The public repository is [codesoda/bluedog-scratch](https://github.com/codesoda/bluedog-scratch). The game is live at **https://codesoda.github.io/bluedog-scratch/**. GitHub Actions checks and deploys it. The live Chrome smoke test verifies the shared hand-finding mirror, local worker inference with a synthetic camera, and camera stop. A debug-input playthrough also verifies the patting hand, star award, finished screen, and fresh progress on replay.
 
 The owner approved a seven-day exception for **GHSA-vfj7-8cjw-p6xm**, only in the pinned development chain `aislop@0.16.1 → micromatch@4.0.8 → braces@3.0.3`. It expires on **10 October 2026 at 01:32:23 UTC**. The audit gate rejects new advisories, changed versions, extra installed copies, production findings, service errors, and expired approval. Raw audits and the policy result remain available as CI artifacts. See `docs/security/audit-exception.json` and `docs/validation.md`.
 

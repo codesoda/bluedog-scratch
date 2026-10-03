@@ -17,7 +17,7 @@ All five enabled AIslop engines ran. Three non-blocking maintainability warnings
 `.github/workflows/pages.yml` follows the `coin-quest` and `skater-dudes` reference workflows. It uses pinned actions, Node.js 24, Chrome browser tests, the 95-point AIslop gate, and a separate full dependency audit. Successful `main` runs deploy only the complete tested build. Pull requests never deploy.
 
 - **Actionlint passed** for the workflow.
-- **142 unit tests and 30 Chrome browser tests passed** in the latest GitHub-hosted Linux run.
+- **162 unit tests and 41 Chrome browser tests passed** in the latest GitHub-hosted Linux run.
 - **Production build passed**, including the verified local model and worker adapters.
 - **Quality-report JSON parses correctly** and retains the scan findings.
 
@@ -31,7 +31,7 @@ An independent review found that inherited npm settings could omit development f
 
 Expiry blocks future deployments, not an already deployed site.
 
-[The latest GitHub-hosted Linux run](https://github.com/codesoda/bluedog-scratch/actions/runs/37088976503) passed **142 unit tests**, **30 Chrome browser tests**, the production build, AIslop at **97/100**, and the scoped audit policy. The raw full audit retains the three approved development entries. The production audit reports **zero vulnerabilities**. Pages deployed successfully.
+[The latest GitHub-hosted Linux run](https://github.com/codesoda/bluedog-scratch/actions/runs/37092429516) passed **162 unit tests**, **41 Chrome browser tests**, the production build, AIslop at **98/100**, and the scoped audit policy. The raw full audit retains the three approved development entries. The production audit reports **zero vulnerabilities**. Pages deployed successfully.
 
 The live site at **https://codesoda.github.io/bluedog-scratch/** returns HTTP 200. A hosted Chrome smoke test verifies:
 
@@ -41,7 +41,9 @@ The live site at **https://codesoda.github.io/bluedog-scratch/** returns HTTP 20
 - The model, WASM, and module-loader adapter load from the same host.
 - The downloaded model matches the pinned SHA-256.
 - WASM and module-loader MIME types are valid.
-- Adult camera stop releases tracking.
+- The new live hand-finding mirror shares the tracker stream; stopping setup clears it and releases tracking.
+- A hosted debug-input playthrough completes six scratches, awards one star, shows the finished screen, and resets progress on replay.
+- The hosted scratch target shows the patting hand and “Keep wiggling” prompt.
 - No page errors or third-party requests occur.
 
 These checks use Chrome's synthetic camera, not a real hand.
@@ -78,7 +80,7 @@ Screenshots in `artifacts/` show the start screen, four revealed scenes, celebra
 
 ## Independent review and corrections
 
-Parallel reviewers checked camera lifecycle/privacy and the game/visual contract. Integration now fixes:
+Parallel reviewers checked camera lifecycle/privacy and the game/visual contract. A follow-up review checks fixed per-go targets, completion/replay, shared preview cleanup, async startup epochs, and stable-hand countdown resets without finding a blocking defect. Integration now fixes:
 
 - Hidden-hand hints no longer cover camera retry overlays.
 - Start, stop, resume, and page-return controls remain usable without resetting progress.

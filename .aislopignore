@@ -1,0 +1,12 @@
+# Downloaded reference source is not game code.
+docs/reference/
+# Generated build and tracking binaries.
+dist/
+public/mediapipe/
+public/models/
+node_modules/
+test-results/
+playwright-report/
+artifacts/
+graft/
+.aislop/session.jsonl

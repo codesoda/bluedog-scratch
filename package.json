@@ -1,0 +1,29 @@
+{
+  "name": "blue-dog-scratch",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "A private, local-camera finger-scratching cartoon game.",
+  "scripts": {
+    "prepare:tracking": "node scripts/prepare-tracking.mjs",
+    "predev": "npm run prepare:tracking",
+    "dev": "vite --host 127.0.0.1",
+    "build": "npm run prepare:tracking && vite build",
+    "preview": "vite preview --host 127.0.0.1",
+    "test": "node --test tests/unit/*.test.js",
+    "test:browser": "playwright test",
+    "check:quality": "aislop ci",
+    "check": "npm run prepare:tracking && npm test && npm run build && npm run test:browser && npm run check:quality"
+  },
+  "dependencies": {
+    "@mediapipe/tasks-vision": "0.10.32"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.58.2",
+    "aislop": "0.16.1",
+    "vite": "7.3.6"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  }
+}

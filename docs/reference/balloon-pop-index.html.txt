@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Balloon Pop Cam</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app">
+      <video id="video" autoplay playsinline muted></video>
+      <canvas id="gameCanvas"></canvas>
+
+      <section class="hud">
+        <div class="pill">Score: <span id="score">0</span></div>
+        <div class="pill">Lives: <span id="lives">3</span></div>
+        <div class="pill">Pops: <span id="pops">0</span></div>
+        <div class="pill">Level: <span id="level">1</span></div>
+        <div class="pill">Time: <span id="timeLeft">0</span>s</div>
+      </section>
+
+      <div class="setup-overlay" id="setupOverlay">
+        <section class="controls" id="controls">
+          <h1>Balloon Pop Cam</h1>
+          <p>Pick your camera and difficulty, then start the game.</p>
+
+          <label class="setup-label">Camera</label>
+          <div class="toggle-group" id="cameraGroup"></div>
+
+          <label class="setup-label">Difficulty</label>
+          <div class="toggle-group" id="difficultyGroup">
+            <button class="toggle-btn" data-difficulty="easy" type="button">Easy</button>
+            <button class="toggle-btn" data-difficulty="medium" type="button">Medium</button>
+            <button class="toggle-btn" data-difficulty="hard" type="button">Hard</button>
+          </div>
+
+          <button class="start-btn" id="startBtn" type="button" disabled>Start Game</button>
+        </section>
+      </div>
+
+      <section class="status" id="status"></section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>

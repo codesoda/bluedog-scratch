@@ -1,0 +1,13 @@
+node_modules/
+dist/
+test-results/
+playwright-report/
+artifacts/
+.aislop/session.jsonl
+.aislop/history.jsonl
+.DS_Store
+public/mediapipe/
+public/models/
+
+# graft's local graph cache — regenerable, not committed (run `graft build`).
+/graft/

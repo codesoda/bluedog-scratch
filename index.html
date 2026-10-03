@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#fff6df" />
+    <meta name="description" content="Find a little blue dog. Show your hand. Give him a scratch! A private, local-camera family game." />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80'%3E%3Crect width='80' height='80' rx='22' fill='%238bc4ea'/%3E%3Ctext x='12' y='59' font-size='54'%3E🐾%3C/text%3E%3C/svg%3E" />
+    <title>Blue Dog Scratch</title>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="masthead">
+        <div class="brand-mark" aria-hidden="true">🐾</div>
+        <div><div class="brand-name">BLUE DOG SCRATCH</div><div class="brand-subtitle">A little hide. A little seek. A lot of happy.</div></div>
+        <nav class="adult-controls" aria-label="Adult controls">
+          <button id="sound-toggle" type="button" aria-label="Mute sound" aria-pressed="false" title="Mute sound">♫</button>
+          <button id="fullscreen-toggle" type="button" aria-label="Enter full screen" title="Full screen">⛶</button>
+          <button id="settings-toggle" type="button" aria-label="Parent settings" aria-expanded="false" aria-controls="settings-panel" title="Parent settings">⚙</button>
+        </nav>
+      </header>
+      <main class="game-frame" aria-label="Blue Dog Scratch game">
+        <svg id="world" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="world-title">
+          <title id="world-title">A playful world. Find the blue dog and rub your finger over his tummy.</title>
+        </svg>
+        <section id="setup-overlay" aria-labelledby="setup-title">
+          <div class="setup-card">
+            <div class="eyebrow">LET'S PLAY A LITTLE</div>
+            <div class="hand-demo" aria-hidden="true">☝ <span>🐾</span></div>
+            <h1 id="setup-title">Find me. Scratch me!</h1>
+            <p id="setup-message" role="status" aria-live="polite">Show your hand. Wiggle your finger. Make a dog very happy.</p>
+            <button id="start-button" type="button">LET'S PLAY <span aria-hidden="true">↗</span></button>
+            <button id="retry-button" type="button" hidden>TRY AGAIN</button>
+            <div id="loading-progress" hidden><span></span></div>
+            <p class="privacy-note">For grown-ups: allow the camera to start.<br />Camera pictures stay on this device. Nothing is recorded.</p>
+          </div>
+        </section>
+        <div id="hand-hint" hidden><span class="hand-hint-icon" aria-hidden="true">☝</span><span class="hand-hint-label">Show me your hand</span></div>
+        <div id="countdown" aria-live="polite" hidden></div>
+        <video id="camera-preview" muted playsinline hidden aria-label="Local camera preview"></video>
+      </main>
+      <aside id="settings-panel" aria-label="Parent settings" hidden>
+        <h2>Grown-up corner</h2>
+        <p class="settings-copy">Play seated or standing. Small, gentle finger movements are enough.</p>
+        <label><input id="camera-preview-toggle" type="checkbox" /> Show local camera preview</label>
+        <button id="stop-camera" type="button">Stop camera</button>
+        <button id="resume-camera" type="button" hidden>Resume camera</button>
+        <p class="settings-copy">There are no uploads, recordings, accounts, or scores to beat.</p>
+      </aside>
+      <footer class="footer-note"><span>Made for little hands &amp; big giggles.</span><span class="footer-pill">● Camera stays local</span></footer>
+      <aside id="debug-panel" hidden><pre id="debug-text"></pre></aside>
+    </div>
+    <script type="module" src="/js/main.js"></script>
+  </body>
+</html>

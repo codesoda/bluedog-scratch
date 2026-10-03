@@ -17,7 +17,7 @@ All five enabled AIslop engines ran. Three non-blocking maintainability warnings
 `.github/workflows/pages.yml` follows the `coin-quest` and `skater-dudes` reference workflows. It uses pinned actions, Node.js 24, Chrome browser tests, the 95-point AIslop gate, and a separate full dependency audit. Successful `main` runs deploy only the complete tested build. Pull requests never deploy.
 
 - **Actionlint passed** for the workflow.
-- **142 unit tests and 26 Chrome browser tests passed** in the latest GitHub-hosted Linux run.
+- **142 unit tests and 30 Chrome browser tests passed** in the latest GitHub-hosted Linux run.
 - **Production build passed**, including the verified local model and worker adapters.
 - **Quality-report JSON parses correctly** and retains the scan findings.
 
@@ -31,11 +31,12 @@ An independent review found that inherited npm settings could omit development f
 
 Expiry blocks future deployments, not an already deployed site.
 
-[The final GitHub-hosted Linux run](https://github.com/codesoda/bluedog-scratch/actions/runs/37087015398) passed **142 unit tests**, **26 Chrome browser tests**, the production build, AIslop at **97/100**, and the scoped audit policy. The raw full audit retains the three approved development entries. The production audit reports **zero vulnerabilities**. Pages deployed successfully.
+[The latest GitHub-hosted Linux run](https://github.com/codesoda/bluedog-scratch/actions/runs/37088976503) passed **142 unit tests**, **30 Chrome browser tests**, the production build, AIslop at **97/100**, and the scoped audit policy. The raw full audit retains the three approved development entries. The production audit reports **zero vulnerabilities**. Pages deployed successfully.
 
 The live site at **https://codesoda.github.io/bluedog-scratch/** returns HTTP 200. A hosted Chrome smoke test verifies:
 
 - Normal startup keeps the camera off and exposes no debug interface.
+- The live hand-finding screen shows the upright index-finger picture and the paw-pointer explanation. A separate hosted check verifies both, with zero page errors.
 - The synthetic camera starts local worker inference at the actual repository path.
 - The model, WASM, and module-loader adapter load from the same host.
 - The downloaded model matches the pinned SHA-256.

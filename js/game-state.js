@@ -11,6 +11,7 @@ export const STATES = Object.freeze({
   REACTION: 'REACTION',
   CELEBRATION: 'CELEBRATION',
   SCENE_TRANSITION: 'SCENE_TRANSITION',
+  GO_COMPLETE: 'GO_COMPLETE',
 });
 
 export const REACTIONS = Object.freeze(['legKick', 'tailWag', 'rollOver', 'happyBounce', 'tongueOut', 'shake', 'laugh']);
@@ -18,6 +19,7 @@ export const EXITS = Object.freeze(['runLeft', 'runRight', 'dive', 'duckDown', '
 
 export const DEFAULT_CONFIG = Object.freeze({
   pawsPerScene: 6,
+  stagesPerGo: 6,
   maxDtMs: 100,
   introMs: 1600,
   revealMs: 450,
@@ -90,6 +92,11 @@ export function clampNumber(v, min, max, fallback) {
   return Math.min(max, Math.max(min, n));
 }
 
+export function normalizeStagesPerGo(value) {
+  if (value == null || typeof value === 'boolean' || String(value).trim() === '') return 6;
+  return Math.round(clampNumber(value, 1, 15, 6));
+}
+
 export function sanitizePointers(pointers) {
   if (!Array.isArray(pointers)) return [];
   return pointers.filter(isUsablePointer).map((p) => ({
@@ -116,6 +123,8 @@ function resetProgress(game) {
   game.sceneId = game.initialSceneId;
   game.nextSceneId = null;
   game.sceneNumber = 0;
+  game.completedStages = 0;
+  game.stagesTarget = normalizeStagesPerGo(game.config.stagesPerGo);
   game.elapsedMs = 0;
   game.stateElapsedMs = 0;
   game.activeMs = 0;

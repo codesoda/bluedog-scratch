@@ -286,8 +286,8 @@ test('reaction and celebration continue without a hand; full scene loop', () => 
   assert.deepEqual(game.drainEvents().filter((e) => e.type === 'scene'), [{ type: 'scene', kind: next }]);
 });
 
-test('scenes never repeat consecutively over many sessions', () => {
-  const game = makeGame({ seed: 77 });
+test('scenes never repeat consecutively across a long go', () => {
+  const game = makeGame({ seed: 77, config: { stagesPerGo: 15 } });
   const hand = new Hand();
   let prev = game.snapshot().sceneId;
   const seen = new Set([prev]);
@@ -382,7 +382,7 @@ test('rare mid-scratch bonus overlays scratching without losing progress', () =>
 });
 
 test('default bonus rate respects cooldown and drought across a long session', () => {
-  const game = makeGame({ bonusRate: 0.24, seed: 3, config: { bonusDelayMinMs: 100, bonusDelayMaxMs: 100, bonusMidScratchChance: 0 } });
+  const game = makeGame({ bonusRate: 0.24, seed: 3, config: { stagesPerGo: 15, bonusDelayMinMs: 100, bonusDelayMaxMs: 100, bonusMidScratchChance: 0 } });
   const hand = new Hand();
   const appearedAt = [];
   let encounter = 0;

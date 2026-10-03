@@ -23,6 +23,7 @@
         <svg id="world" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="world-title">
           <title id="world-title">A playful world. Find the blue dog and rub your finger over his tummy.</title>
         </svg>
+        <div id="go-progress" hidden role="status" aria-live="polite"><span aria-hidden="true">★</span><span id="go-progress-label">0 of 6 stars</span></div>
         <section id="setup-overlay" aria-labelledby="setup-title">
           <div class="setup-card">
             <div class="eyebrow">LET'S PLAY A LITTLE</div>
@@ -34,19 +35,51 @@
             <h1 id="setup-title">Find me. Scratch me!</h1>
             <p id="setup-message" role="status" aria-live="polite">Point your index finger up to the sky.</p>
             <p id="pointer-instructions">The paw in the circle is your pointer.<br />Move your finger to move the paw.</p>
+            <div id="hand-setup-view" hidden>
+              <video id="hand-setup-preview" muted playsinline aria-label="Live local mirror of your hand"></video>
+              <svg id="hand-setup-tracking" aria-hidden="true"></svg>
+            </div>
             <button id="start-button" type="button">LET'S PLAY <span aria-hidden="true">↗</span></button>
             <button id="retry-button" type="button" hidden>TRY AGAIN</button>
             <div id="loading-progress" hidden><span></span></div>
             <p class="privacy-note">For grown-ups: allow the camera to start.<br />Camera pictures stay on this device. Nothing is recorded.</p>
           </div>
         </section>
-        <div id="hand-hint" hidden><span class="hand-hint-icon" aria-hidden="true">☝</span><span class="hand-hint-label">Show me your hand</span></div>
+        <section id="go-complete-overlay" hidden aria-labelledby="go-complete-title">
+          <div class="setup-card">
+            <div class="eyebrow">YOUR TURN IS FINISHED</div>
+            <div class="go-complete-star" aria-hidden="true">★</div>
+            <h2 id="go-complete-title">Lovely scratching!</h2>
+            <p id="go-complete-message">You earned 6 stars!</p>
+            <button id="play-again-button" type="button">PLAY AGAIN <span aria-hidden="true">↗</span></button>
+            <p class="privacy-note">Time for a little break, or another adventure.<br />The camera is off until you play again.</p>
+          </div>
+        </section>
+        <section id="hand-hint" hidden aria-labelledby="hand-hint-title" role="status" aria-live="polite">
+          <div class="hand-recovery-card">
+            <h2 id="hand-hint-title">Show me your hand</h2>
+            <div class="hand-demo">
+              <svg id="lost-hand-guide" viewBox="0 0 300 150" role="img" aria-labelledby="lost-hand-guide-title">
+                <title id="lost-hand-guide-title">Hold up your hand with your index finger pointing up, to move the paw in the circle.</title>
+              </svg>
+            </div>
+            <p>Hold up your hand. Point your index finger up to the sky and move slowly.</p>
+            <p class="hand-recovery-detail">The paw in the circle is your pointer.</p>
+          </div>
+        </section>
         <div id="countdown" aria-live="polite" hidden></div>
         <video id="camera-preview" muted playsinline hidden aria-label="Local camera preview"></video>
       </main>
       <aside id="settings-panel" aria-label="Parent settings" hidden>
         <h2>Grown-up corner</h2>
         <p class="settings-copy">Play seated or standing. Small, gentle finger movements are enough.</p>
+        <div class="stage-setting">
+          <label for="stages-per-go">Stages per go <output id="stage-count" for="stages-per-go">6 stages</output></label>
+          <input id="stages-per-go" type="range" min="1" max="15" step="1" value="6" aria-describedby="stage-setting-help stage-change-note" />
+          <div class="stage-range" aria-hidden="true"><span>1 stage</span><span>15 stages</span></div>
+          <p id="stage-setting-help" class="settings-copy">Six scratches finish one scene and earn one star.</p>
+          <p id="stage-change-note" class="settings-copy">Changes apply to the next go.</p>
+        </div>
         <label><input id="camera-preview-toggle" type="checkbox" /> Show local camera preview</label>
         <button id="stop-camera" type="button">Stop camera</button>
         <button id="resume-camera" type="button" hidden>Resume camera</button>

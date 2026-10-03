@@ -1,6 +1,6 @@
 # Blue Dog Scratch
 
-A webcam game for little hands. Find the blue dog, point at him, and wiggle your finger over his tummy. Six scratches bring a celebration and a new scene.
+A webcam game for little hands. Find the blue dog, point at him, and wiggle your finger over his tummy. Six scratches finish a scene and earn one star. Finish your chosen number of scenes, then take a break or play again.
 
 ## Run locally
 
@@ -11,7 +11,7 @@ npm ci
 npm run dev
 ```
 
-Open the printed localhost address. Click **LET'S PLAY** once and allow camera access. Hold up an index finger. After the visual countdown, all gameplay uses your hand. Play seated or standing; small movements are enough.
+Open the printed localhost address. Click **LET'S PLAY** once and allow camera access. Point an index finger up to the sky. The live local mirror shows your hand and paw pointer. Hold it steadily for one second, then through the three-second countdown. Losing the hand or moving too fast resets the countdown and shows a gentle hint. After that, gameplay uses your hand. Play seated or standing; small movements are enough.
 
 Do not open `index.html` directly from disk. Camera access requires localhost or HTTPS. If the camera is unavailable, the game shows an adult-facing retry message rather than switching normal gameplay to a mouse.
 
@@ -26,12 +26,17 @@ Starting the dev server or building prepares the tracking assets automatically. 
 - Hints that grow stronger without a timeout or a loss state.
 - Orange-dog surprises with cooldown and drought protection. Missing one has no penalty.
 - Decorative parent cameos, ambient animation, and playful optional props.
-- Continuous scene changes without repeating the previous scene.
+- One star per completed scene. Parent settings choose 1–15 stages per go, with 6 as the default.
+- Scene changes without repeating the previous scene within a go.
+- A friendly turn-finished screen, camera stop, and a click-to-play-again button.
+- A centered patting hand and “Keep wiggling” prompt while scratching. Actual finger movement still earns progress.
 - Quiet synthesized feedback, mute, full screen, and an adult camera stop control.
-- Hand-loss pause, reacquisition safeguards, and opt-in debugging.
+- Hand-loss pause with a prominent centered hand-and-paw guide, reacquisition safeguards, and opt-in debugging.
 - Retry and camera cleanup if inference stops working, with no queued frames across a tab pause.
 
-Orange-dog rewards are decorative. They do not replace one of the six required blue-dog scratches. No two-handed gesture is required.
+One stage is one complete scene, not one scratch. For example, an 8-stage go ends after 8 stars and 48 successful blue-dog scratches. Settings changed during play apply to the next go. The stage choice lasts until you reload the page; it does not add stored personal data.
+
+Orange-dog rewards are decorative. They do not replace one of the six required blue-dog scratches or add a stage star. No two-handed gesture is required.
 
 All artwork is code-native SVG. No image-generation quota is used. The characters are intended for the private family prototype in the PRD. There is no show name, logo, or official affiliation. Review character rights before any public distribution.
 
@@ -39,7 +44,7 @@ All artwork is code-native SVG. No image-generation quota is used. The character
 
 Camera frames and hand inference stay in the browser. The game does not upload, record, save screenshots, send analytics, or require a backend. It requests video only, not a microphone. It stores only an adult sound preference in local storage.
 
-The parent controls can show a small local camera preview or release the camera. Leaving the page releases camera resources. The inference worker handles one frame at a time, without a frame queue.
+Hand finding shows a live local mirror and derived hand landmarks. That mirror clears when play starts or camera setup stops. During play, parent controls can show a small local camera preview or release the camera. Finishing a go or leaving the page releases camera resources. The inference worker handles one frame at a time, without a frame queue.
 
 ## Build and static hosting
 
@@ -115,11 +120,12 @@ Automated checks do not establish real-camera latency, frame rate on every compu
 4. Move a hand out of view during scratching and a surprise. Return elsewhere; the jump must not add scratch progress.
 5. Add a second hand and cross hands. Check pointer stability and one-paw-per-scratch behaviour.
 6. Leave the tab and return. Stop/resume the camera from parent controls.
-7. Complete six scratches. Check celebration and automatic scene change in all four scenes.
+7. Complete six scratches. Check that the scene earns one star, celebrates, then changes unless it is the last stage. Try 1, 6, 8, and 15 stages. Check camera release and fresh progress after “Play again”.
 8. Miss orange-dog appearances. Check that no progress is removed and the blue dog remains available.
 9. Leave the dog unfound and watch escalating visual/audio hints.
 10. Check mute, camera preview, full screen, smaller windows, and reduced-motion settings.
-11. Let a five-year-old try without verbal instructions. Check discovery, rubbing, bonus excitement, and voluntary replay.
+11. During hand finding, deliberately move fast and drop your hand in and out. Check that the countdown waits for steady tracking and resets on loss. During play, check the centered recovery guide and patting-hand cue.
+12. Let a five-year-old try without verbal instructions. Check discovery, rubbing, bonus excitement, and voluntary replay.
 
 Tune scratch thresholds, hint timing, and bonus duration after this test. Do not add forceful movement or penalties to solve tracking problems.
 

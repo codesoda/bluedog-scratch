@@ -7,6 +7,10 @@ import { AudioManager } from './audio.js';
 import { parseOptions, createRng, readMuted, saveMuted } from './config.js';
 import { installDebug } from './debug.js';
 import { renderHandGuide } from './onboarding.js';
+import { HandReadiness } from './hand-readiness.js';
+import { HandSetupView } from './hand-setup-view.js';
+import { installGoControls } from './go-controls.js';
+import { STATES } from './game-state.js';
 
 const byId = id => document.getElementById(id);
 const options = parseOptions(location.search, SCENE_IDS);
@@ -21,6 +25,8 @@ const renderer = new Renderer(world, { reducedMotion });
 const audio = new AudioManager();
 audio.setMuted(readMuted());
 const video = byId('camera-preview');
+const handSetup = new HandSetupView(video);
+const readiness = new HandReadiness();
 const overlay = byId('setup-overlay');
 const startButton = byId('start-button');
 const retryButton = byId('retry-button');
@@ -28,6 +34,7 @@ const handHint = byId('hand-hint');
 const countdown = byId('countdown');
 const loading = byId('loading-progress');
 renderHandGuide(byId('hand-guide'));
+renderHandGuide(byId('lost-hand-guide'));
 let pointers = [];
 let landmarks = [];
 let inferenceMs = 0;
@@ -37,7 +44,6 @@ let waiting = false;
 let loadingCamera = false;
 let manual = false;
 let pausedByAdult = false;
-let countdownMs = 0;
 let missingHandMs = 0;
 let startupEpoch = 0;
 let lastFrameAt = performance.now();
@@ -52,10 +58,12 @@ function setMessage(title, message) {
 }
 
 function showError(error) {
+  if (game.state === STATES.GO_COMPLETE) return;
+  handSetup.hide();
   waiting = false;
   loadingCamera = false;
   pointers = [];
-  countdownMs = 0;
+  readiness.reset();
   countdown.hidden = true;
   overlay.hidden = false;
   handHint.hidden = true;
@@ -77,6 +85,7 @@ function showError(error) {
 const tracker = new HandTracker(video, {
   onFrame: frame => {
     setPointers(frame.pointers || []);
+    if (waiting) handSetup.draw(frame);
     landmarks = options.debug ? frame.landmarks || [] : [];
     inferenceMs = frame.inferenceMs || 0;
   },
@@ -86,14 +95,47 @@ const tracker = new HandTracker(video, {
   onError: error => showError(error),
 });
 
+const goControls = installGoControls({ game, onComplete: endTurn, onPlayAgain: playAgain });
+
+function endTurn() {
+  startupEpoch++;
+  tracker.stop();
+  started = false;
+  waiting = false;
+  loadingCamera = false;
+  pausedByAdult = true;
+  pointers = [];
+  landmarks = [];
+  readiness.reset();
+  handSetup.hide();
+  overlay.hidden = true;
+  countdown.hidden = true;
+  handHint.hidden = true;
+  loading.hidden = true;
+  video.hidden = true;
+  byId('stop-camera').hidden = true;
+  byId('resume-camera').hidden = true;
+}
+
+function playAgain() {
+  game.start();
+  missingHandMs = 0;
+  byId('settings-panel').hidden = true;
+  byId('settings-toggle').setAttribute('aria-expanded', 'false');
+  overlay.hidden = false;
+  void startCamera();
+}
+
 function syncCameraPreview() {
   video.hidden = !byId('camera-preview-toggle').checked || !tracker.running;
 }
 
 function beginPlay() {
+  if (!started) game.start();
+  handSetup.hide();
   started = true;
   waiting = false;
-  countdownMs = 0;
+  readiness.reset();
   countdown.hidden = true;
   overlay.hidden = true;
   handHint.hidden = true;
@@ -103,7 +145,7 @@ function beginPlay() {
 game.start();
 
 async function startCamera() {
-  if (loadingCamera) return;
+  if (loadingCamera || game.state === STATES.GO_COMPLETE) return;
   byId('stop-camera').hidden = false;
   byId('resume-camera').hidden = true;
   const epoch = ++startupEpoch;
@@ -111,7 +153,8 @@ async function startCamera() {
   loadingCamera = true;
   waiting = false;
   pointers = [];
-  countdownMs = 0;
+  readiness.reset();
+  handSetup.hide();
   startButton.disabled = true;
   retryButton.disabled = true;
   startButton.hidden = true;
@@ -134,6 +177,7 @@ async function startCamera() {
     syncCameraPreview();
     if (started) { overlay.hidden = true; return; }
     waiting = true;
+    handSetup.show();
     setMessage('Show me your hand', 'Point your index finger up to the sky. Keep your hand where the camera can see it.');
   } catch (error) {
     if (epoch === startupEpoch) showError(error);
@@ -142,17 +186,18 @@ async function startCamera() {
   }
 }
 
-function updateStartup(dt, hasHand) {
+function updateStartup(dt) {
   if (!waiting) return;
-  if (!hasHand) {
-    countdownMs = 0;
-    countdown.hidden = true;
-    return;
-  }
-  countdownMs += dt;
-  countdown.hidden = false;
-  countdown.textContent = String(Math.max(1, 3 - Math.floor(countdownMs / 1000)));
-  if (countdownMs >= 3000) beginPlay();
+  const status = readiness.update(dt, pointers);
+  if (!pointers.length) handSetup.draw({});
+  countdown.hidden = status.countdown === null;
+  const number = status.countdown === null ? '' : String(status.countdown);
+  if (countdown.textContent !== number) countdown.textContent = number;
+  const message = status.hint
+    ? 'Point your index finger up to the sky. Move slowly so the camera can see your hand.'
+    : 'Point your index finger up to the sky. Hold your hand steady while we get ready.';
+  if (byId('setup-message').textContent !== message) byId('setup-message').textContent = message;
+  if (status.phase === 'ready') beginPlay();
 }
 
 function render() {
@@ -160,6 +205,7 @@ function render() {
   renderer.handleEvents(events);
   audio.handleEvents(events);
   const snapshot = game.snapshot();
+  goControls.update(snapshot, started);
   renderer.render(snapshot, pointers, { debug: options.debug, fps, landmarks });
   updateDebug?.(snapshot);
   if (options.debug) byId('debug-text').textContent += `\nInference: ${inferenceMs.toFixed(1)} ms`;
@@ -172,11 +218,11 @@ function tick(now) {
   if (!manual && !document.hidden) {
     if (!options.mouse && now - lastTrackingAt > 350) pointers = [];
     const hasHand = pointers.some(p => p.active);
-    updateStartup(dt, hasHand);
+    updateStartup(dt);
     if (started && !pausedByAdult) {
       game.update(dt, pointers);
       missingHandMs = hasHand ? 0 : missingHandMs + dt;
-      handHint.hidden = missingHandMs < 800 || !overlay.hidden;
+      handHint.hidden = missingHandMs < 800 || !game.snapshot().paused || !overlay.hidden;
     }
   }
   render();
@@ -218,6 +264,8 @@ byId('camera-preview-toggle').addEventListener('change', syncCameraPreview);
 byId('stop-camera').addEventListener('click', () => {
   startupEpoch++;
   tracker.stop();
+  handSetup.hide();
+  readiness.reset();
   pointers = [];
   game.update(0, []);
   pausedByAdult = true;
@@ -245,7 +293,7 @@ byId('resume-camera').addEventListener('click', () => {
 document.addEventListener('visibilitychange', () => {
   pointers = [];
   game.update(0, []);
-  countdownMs = 0;
+  readiness.reset();
   lastFrameAt = performance.now();
   if (document.hidden) tracker.pause();
   else if (!pausedByAdult && tracker.running) tracker.resume();
@@ -253,6 +301,8 @@ document.addEventListener('visibilitychange', () => {
 window.addEventListener('pagehide', event => {
   startupEpoch++;
   tracker.stop();
+  handSetup.hide();
+  readiness.reset();
   pointers = [];
   game.update(0, []);
   if (!event.persisted) audio.destroy();

@@ -105,7 +105,7 @@ export class Game {
   // ------------------------------------------------------------ main loop
 
   update(dtMs, pointers = []) {
-    if (!this.started) return this.snapshot();
+    if (!this.started || this.state === STATES.GO_COMPLETE) return this.snapshot();
     const dt = clampNumber(dtMs, 0, this.config.maxDtMs, 0);
     const list = sanitizePointers(pointers);
     const hadHand = this.hasHand;
@@ -285,6 +285,7 @@ export class Game {
     if (this.bonusHits > 0 || this.rng() < this.config.celebrationOrangeChance) cast.push('orange');
     if (this.rng() < this.config.celebrationParentsChance) cast.push('parents');
     this.celebrationCast = cast;
+    this.completedStages += 1;
     this._setState(STATES.CELEBRATION);
     this._emit({ type: 'celebration', kind: this.sceneId, progress: 1 });
   }
@@ -292,6 +293,14 @@ export class Game {
   _updateCelebration(dt) {
     this.stateElapsedMs += dt;
     if (this.stateElapsedMs >= this.config.celebrationMs) {
+      if (this.completedStages >= this.stagesTarget) {
+        this.hasHand = false;
+        this.pointers = [];
+        this.gesture.reset();
+        this._setState(STATES.GO_COMPLETE);
+        this._emit({ type: 'goComplete', stars: this.completedStages });
+        return;
+      }
       this.nextSceneId = pickAvoiding(this.rng, SCENE_IDS, [this.sceneId]);
       this._setState(STATES.SCENE_TRANSITION);
     }

@@ -9,6 +9,7 @@ import {
   el, setAttr, setTransform, setVisible, createDogRig, createPaw, createPointingHand,
   createRainbowBadge, createCameoProp, starPath, HEART_PATH, INK, KID_EXTENTS,
 } from './characters.js';
+import { createScratchHand } from './scratch-hand.js';
 import { W, H, buildBackground, paintOccluder, paintProp, CAMEO_CLIPS } from '../assets/art/scene-art.js';
 
 const DOG_VISUAL_H = KID_EXTENTS.feetY - KID_EXTENTS.earTop; // local units
@@ -17,6 +18,8 @@ const DOG_SCALE = (DOG_SIZE.h * H) / DOG_VISUAL_H;
 const BONUS_SCALE = (BONUS_DOG_SIZE.h * H) / DOG_VISUAL_H;
 const HIDE_BAND = 420;
 const MAX_PARTICLES = 220;
+const HAND_SPEED_THRESH = 8; // px/sample: real wiggle vs stationary jitter
+const HAND_HOLD_MS = 260; // keeps the last wiggle pose briefly to avoid flicker
 
 const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
 const r2 = (n) => Math.round(n * 100) / 100;
@@ -1195,11 +1198,11 @@ export class Renderer {
       if (!ptr) {
         const g = el('g', { class: 'paw-pointer', 'data-pointer': id }, this.layers.pointers);
         const second = this.pointerEls.size % 2 === 1;
-        const glow = el('circle', { r: 64, fill: `url(#${this.uid}-pointer-glow${second ? '-2' : ''})` }, g);
-        const ring = el('circle', { r: 40, fill: 'none', stroke: '#fff', 'stroke-width': 5, opacity: 0.85 }, g);
+        const glow = el('circle', { class: 'pointer-glow', r: 64, fill: `url(#${this.uid}-pointer-glow${second ? '-2' : ''})` }, g);
+        const ring = el('circle', { class: 'pointer-ring', r: 40, fill: 'none', stroke: '#fff', 'stroke-width': 5, opacity: 0.85 }, g);
         const paw = createPaw(g, { fill: second ? '#ffd0dd' : '#fff4c2', strokeWidth: 4 });
         setTransform(paw, 'translate(0 2) scale(0.6)');
-        ptr = { g, glow, ring, paw };
+        ptr = { g, glow, ring, paw, hand: null, handOpenness: 0.5, handPhase: false, handLastMoveAt: -Infinity };
         this.pointerEls.set(id, ptr);
       }
       setVisible(ptr.g, true);
@@ -1209,6 +1212,7 @@ export class Renderer {
       const speed = prev ? Math.hypot(x - prev.x, y - prev.y) : 0;
       this.pointerHistory.set(id, { x, y });
       const overDog = this._overRect(p, snap.dog && (snap.state === 'HIDING' ? snap.dog.revealRect : snap.dog.scratchRect));
+      const inScratchZone = snap.state === 'SCRATCHING' && overDog;
       const pulse = this.reducedMotion ? 1 : 1 + Math.sin(t / 160) * 0.06 + (overDog ? 0.12 : 0);
       setTransform(ptr.g, `translate(${r2(x)} ${r2(y)})`);
       setTransform(ptr.glow, `scale(${r2(pulse * (overDog ? 1.25 : 1))})`);
@@ -1218,9 +1222,38 @@ export class Renderer {
       if (!this.reducedMotion && speed > 14 && Math.random() < 0.5) {
         this._spawn('sparkle', x + (Math.random() - 0.5) * 20, y + (Math.random() - 0.5) * 20, { vx: 0, vy: 20, life: 420, color: idx % 2 ? '#ffb3c8' : '#ffe58a', scale: 0.6 });
       }
+      if (inScratchZone) {
+        if (!ptr.hand) ptr.hand = createScratchHand(ptr.g);
+        setVisible(ptr.glow, false);
+        setVisible(ptr.ring, false);
+        setVisible(ptr.paw, false);
+        const dogX = snap.dog.x * W;
+        const dogY = snap.dog.y * H;
+        setTransform(ptr.hand.g, `translate(${r2(dogX - x)} ${r2(dogY - y)})`);
+        if (this.reducedMotion) {
+          ptr.handOpenness = 0.5;
+        } else {
+          if (speed > HAND_SPEED_THRESH) { ptr.handLastMoveAt = t; ptr.handPhase = !ptr.handPhase; }
+          const wiggling = (t - ptr.handLastMoveAt) < HAND_HOLD_MS;
+          const target = wiggling ? (ptr.handPhase ? 1 : 0.15) : 0.5;
+          ptr.handOpenness = lerp(ptr.handOpenness, target, 0.35);
+        }
+        ptr.hand.setOpenness(ptr.handOpenness);
+        ptr.hand.setHandVisible(true);
+        ptr.hand.setPromptVisible(true);
+      } else {
+        setVisible(ptr.glow, true);
+        setVisible(ptr.ring, true);
+        setVisible(ptr.paw, true);
+        if (ptr.hand) { ptr.hand.setHandVisible(false); ptr.hand.setPromptVisible(false); }
+      }
     });
     for (const [id, ptr] of this.pointerEls) {
-      if (!seen.has(id)) { setVisible(ptr.g, false); this.pointerHistory.delete(id); }
+      if (!seen.has(id)) {
+        setVisible(ptr.g, false);
+        this.pointerHistory.delete(id);
+        if (ptr.hand) { ptr.hand.setHandVisible(false); ptr.hand.setPromptVisible(false); }
+      }
     }
   }
 

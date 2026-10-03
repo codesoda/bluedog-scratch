@@ -21,6 +21,7 @@ export function dogMode(game) {
     case STATES.REACTION:
       return game.stateElapsedMs < c.reactionMs * (1 - c.exitFraction) ? 'reaction' : 'exit';
     case STATES.CELEBRATION:
+    case STATES.GO_COMPLETE:
       return 'celebrate';
     default:
       return 'away';
@@ -60,7 +61,7 @@ function bonusSnapshot(game) {
 
 function dogSnapshot(game, bonus) {
   const spot = game.spot || NO_SPOT;
-  const celebrating = game.state === STATES.CELEBRATION;
+  const celebrating = game.state === STATES.CELEBRATION || game.state === STATES.GO_COMPLETE;
   let progress = 0;
   if (game.state === STATES.REACTION) progress = 1;
   else if (game.spot) progress = game._scratchProgress();
@@ -109,6 +110,8 @@ export function buildSnapshot(game) {
     nextSceneId: game.nextSceneId,
     spotId: game.spot ? game.spot.id : null,
     sceneNumber: game.sceneNumber,
+    completedStages: game.completedStages,
+    stagesTarget: game.stagesTarget,
     elapsedMs: game.elapsedMs,
     stateElapsedMs: game.stateElapsedMs,
     paws: game.paws,

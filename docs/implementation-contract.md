@@ -1,6 +1,6 @@
 # Implementation contract
 
-Read `docs/prd.md` for product requirements. This document fixes module boundaries for parallel implementation. Full V1, private family prototype, animated code-native SVG art, desktop Chrome first, no backend, no analytics, no deployment. Do not edit the PRD or downloaded reference files. The reference `docs/reference/balloon-pop-app.js.txt` uses mirrored landmark 8 and two independent pointers. We use modern MediaPipe Tasks Vision, hosted locally. No graph exists yet.
+Read `docs/prd.md` for product requirements. This document fixes module boundaries for parallel implementation. The initial scope is full V1, a private family prototype, animated code-native SVG art, desktop Chrome first, no backend, and no analytics. The owner later approved public Pages deployment and the follow-up contract below. Do not edit the PRD or downloaded reference files. The reference `docs/reference/balloon-pop-app.js.txt` uses mirrored landmark 8 and two independent pointers. We use modern MediaPipe Tasks Vision, hosted locally. The sections below record the original parallel module boundaries.
 
 ## Shared coordinates and input
 
@@ -51,6 +51,17 @@ Export `HandTracker`: `new HandTracker(videoElement,{onFrame,onStatus,onError}={
 
 Own ONLY `js/audio.js`, `tests/unit/audio*.test.js`. Export `AudioManager` with `new AudioManager()`, `await unlock()` invoked directly from start click before asynchronous camera permission; `setMuted(bool)`, getter `muted`, `handleEvents(events)`, `destroy()`. Web Audio synthesized pleasant non-startling bounded sounds for listed events, distinct orange surprise cue, giggle-like playful tones, quiet environmental prop notes and short celebration melody. No speech required, no constant noisy loop. Clamp master volume, cap/polyphony/throttle, honor mute immediately including already-playing tails and avoid resume while muted. On unsupported audio no-op, never prevent gameplay. Sound preference managed by main localStorage (no video stored). Do not access webcam/DOM. Tests use injected or mocked context.
 
+## Approved follow-up contract
+
+- A stage is one complete scene: six blue-dog scratches award one star. A go defaults to six stages and allows 1–15 in parent settings. Changes apply to the next go; the active target is fixed until restart.
+- Snapshots add `completedStages` and `stagesTarget`. `GO_COMPLETE` follows the final celebration, freezes updates, and emits `goComplete` once. No hand is required to finish the celebration.
+- The finished screen offers a clickable “Play again” control. Completion releases the camera and both local previews. Replay resets progress and adopts the pending stage setting before requesting the camera again.
+- `go-controls.js` owns settings and finish/progress DOM. `hand-readiness.js` is a pure readiness gate: one second of steady tracking, then a three-second countdown. Loss, changed owner, or excessive movement resets it and prompts slow movement.
+- `hand-setup-view.js` shares the camera stream for a live mirrored setup view and renders derived hand landmarks and paw pointers. It never requests its own stream and clears its preview at play, stop, error, finish, or page exit.
+- Lost tracking during interactive play shows a centered hand-and-paw guide. It must not cover setup/error screens or celebrations that do not need a hand.
+- `scratch-hand.js` supplies the centered opening/closing hand and “Keep wiggling” cue. These are feedback only. Gesture rules, motion credit, and jitter rejection do not change.
+- Public Pages deployment requires the existing checks and AIslop minimum 95. The owner-approved development advisory exception is exact, time-limited, and separate from runtime security requirements.
+
 ## Verification and delivery
 
-Node built-in unit tests, Playwright browser tests for render/startup/missing permission/debug simulation/hitbox scaling/gesture progression/bonus pause/continuous scene transitions. Debug mouse simulation ONLY `?debug=true&input=mouse`; never normal gameplay fallback. Debug exposes `window.__BLUE_DOG__` for browser tests ONLY when debug true: `{game, renderer, setPointers(pointers), step(dt), snapshot()}`. Query params `scene`, `debug`, `camera`, `bonusRate`, `cameoRate`, `seed` validated/clamped. No real webcam or child validation claims. Vite for dev/build only, no game framework. Production all model/WASM local; build works under nested base path and static HTTPS. No deployment. Report files, APIs, tests and any known incomplete features under 300 words.
+Node built-in unit tests, Playwright browser tests for render/startup/missing permission/debug simulation/hitbox scaling/gesture progression/bonus pause/continuous scene transitions. Debug mouse simulation ONLY `?debug=true&input=mouse`; never normal gameplay fallback. Debug exposes `window.__BLUE_DOG__` for browser tests ONLY when debug true: `{game, renderer, setPointers(pointers), step(dt), snapshot()}`. Query params `scene`, `debug`, `camera`, `bonusRate`, `cameoRate`, `seed` validated/clamped. No real webcam or child validation claims. Vite for dev/build only, no game framework. Production all model/WASM local; build works under nested base path and static HTTPS. The later approved delivery uses the checked GitHub Pages workflow. Do not claim real webcam or child validation from synthetic/injected tests.

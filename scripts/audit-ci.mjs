@@ -24,8 +24,8 @@ async function runAudit(filename, args) {
 
 async function main() {
   await mkdir(evidence, { recursive: true });
-  const fullReport = await runAudit('audit.json', []);
-  const productionReport = await runAudit('audit-production.json', ['--omit=dev']);
+  const fullReport = await runAudit('audit.json', ['--include=dev', '--include=optional', '--include=peer']);
+  const productionReport = await runAudit('audit-production.json', ['--omit=dev', '--include=optional', '--include=peer']);
   const lockfile = JSON.parse(await readFile(new URL('../package-lock.json', import.meta.url), 'utf8'));
   const exception = JSON.parse(await readFile(new URL('../docs/security/audit-exception.json', import.meta.url), 'utf8'));
   const result = evaluateAudit({ fullReport, productionReport, lockfile, exception });

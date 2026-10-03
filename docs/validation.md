@@ -27,6 +27,8 @@ The project owner approved public publication. The public repository is `codesod
 
 The owner then approved a seven-day exception for this advisory only. `npm run check:audit` runs both full and production audits, saves their raw reports, and checks a fail-closed policy. The approval expires at **2026-10-10T01:32:23.453Z**. It permits only the exact development chain recorded in `docs/security/audit-exception.json`. New advisories, changed versions, additional installed copies, production findings, audit failures, malformed reports, and expired approval remain blocking. The policy enforces expiry for the affected installed version even when the audit service returns zero findings. This accepts risk; it does not fix the dependency.
 
+An independent review found that inherited npm settings could omit development findings from the full audit. The runner now explicitly includes development, optional, and peer dependencies. A manual check with both `NODE_ENV=production` and `npm_config_omit=dev` still reports all three approved entries and a clean production audit.
+
 Expiry blocks future deployments, not an already deployed site. No successful deployment has been verified yet.
 
 ## Browser coverage

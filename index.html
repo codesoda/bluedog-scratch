@@ -26,9 +26,14 @@
         <section id="setup-overlay" aria-labelledby="setup-title">
           <div class="setup-card">
             <div class="eyebrow">LET'S PLAY A LITTLE</div>
-            <div class="hand-demo" aria-hidden="true">☝ <span>🐾</span></div>
+            <div class="hand-demo">
+              <svg id="hand-guide" viewBox="0 0 300 150" role="img" aria-labelledby="hand-guide-title">
+                <title id="hand-guide-title">A hand with its index finger pointing up to the sky, beside a paw inside a circle.</title>
+              </svg>
+            </div>
             <h1 id="setup-title">Find me. Scratch me!</h1>
-            <p id="setup-message" role="status" aria-live="polite">Show your hand. Wiggle your finger. Make a dog very happy.</p>
+            <p id="setup-message" role="status" aria-live="polite">Point your index finger up to the sky.</p>
+            <p id="pointer-instructions">The paw in the circle is your pointer.<br />Move your finger to move the paw.</p>
             <button id="start-button" type="button">LET'S PLAY <span aria-hidden="true">↗</span></button>
             <button id="retry-button" type="button" hidden>TRY AGAIN</button>
             <div id="loading-progress" hidden><span></span></div>

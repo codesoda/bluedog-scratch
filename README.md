@@ -20,6 +20,7 @@ Starting the dev server or building prepares the tracking assets automatically. 
 ## What is included
 
 - Four illustrated, layered SVG worlds: backyard, bedroom, lounge, and playground.
+- A clear picture of an index finger pointing up, with a paw-in-circle pointer lesson before play.
 - Mirrored index-finger tracking, smoothed paw pointers, and generous targets.
 - Find, reveal, scratch, progressive reactions, and six-paw celebrations.
 - Hints that grow stronger without a timeout or a loss state.

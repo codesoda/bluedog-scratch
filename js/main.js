@@ -6,6 +6,7 @@ import { HandTracker } from './hand-tracking.js';
 import { AudioManager } from './audio.js';
 import { parseOptions, createRng, readMuted, saveMuted } from './config.js';
 import { installDebug } from './debug.js';
+import { renderHandGuide } from './onboarding.js';
 
 const byId = id => document.getElementById(id);
 const options = parseOptions(location.search, SCENE_IDS);
@@ -26,6 +27,7 @@ const retryButton = byId('retry-button');
 const handHint = byId('hand-hint');
 const countdown = byId('countdown');
 const loading = byId('loading-progress');
+renderHandGuide(byId('hand-guide'));
 let pointers = [];
 let landmarks = [];
 let inferenceMs = 0;
@@ -132,7 +134,7 @@ async function startCamera() {
     syncCameraPreview();
     if (started) { overlay.hidden = true; return; }
     waiting = true;
-    setMessage('Show me your hand', 'Hold up one hand and point your finger. You can sit down to play.');
+    setMessage('Show me your hand', 'Point your index finger up to the sky. Keep your hand where the camera can see it.');
   } catch (error) {
     if (epoch === startupEpoch) showError(error);
   } finally {

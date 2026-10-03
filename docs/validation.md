@@ -5,7 +5,7 @@
 The final `npm run check` passes:
 
 - **142 unit tests passed.** Zero failures and zero skipped tests. This includes 37 audit-policy cases.
-- **26 desktop Chrome browser tests passed.**
+- **30 desktop Chrome browser tests passed.**
 - **Production build passed.** The complete static bundle is in `dist/` (about 30 MB, including local inference assets).
 - **AIslop CI passed: 97–98/100 across the latest runs.** `.aislop/config.yml` retains `ci.failBelow: 95` and disables telemetry.
 - **The dependency audit has an unresolved development-only advisory.** It reports three high-severity dependency entries for the chain `aislop → micromatch → braces`. The actual advisory is [GHSA-vfj7-8cjw-p6xm](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm), affecting `braces` through 3.0.3. No patched version is listed. Audit responses vary between runs, including zero-result responses; those do not establish remediation. The production-only audit reports zero vulnerabilities.
@@ -50,6 +50,8 @@ These checks use Chrome's synthetic camera, not a real hand.
 Tests cover:
 
 - Camera stays off until the adult starts the game.
+- Startup and hand finding show an upright index-finger illustration and explain the paw-in-circle pointer.
+- The guide stays available on narrow and short windows, including reduced-motion mode.
 - Camera denial, retry, pending-permission cancellation, and late rejection.
 - Local worker inference using Chrome's **synthetic camera**, at root and nested static hosting paths.
 - Explicit local main-thread fallback when workers are unavailable.

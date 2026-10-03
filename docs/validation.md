@@ -21,7 +21,9 @@ All five enabled AIslop engines ran. Three non-blocking maintainability warnings
 - **Production build passed**, including the verified local model and worker adapters.
 - **Quality-report JSON parses correctly** and retains the scan findings.
 
-The project owner approved public publication. The public repository is `codesoda/bluedog-scratch`, and Pages is configured to use GitHub Actions. Its target URL is https://codesoda.github.io/bluedog-scratch/. No successful deployment has been verified yet. The unresolved development advisory needs a verified fix or an explicitly approved risk decision before treating the full audit as clear.
+The project owner approved public publication. The public repository is `codesoda/bluedog-scratch`, and Pages is configured to use GitHub Actions. Its target URL is https://codesoda.github.io/bluedog-scratch/.
+
+[The first GitHub-hosted Linux run](https://github.com/codesoda/bluedog-scratch/actions/runs/37085874180) passed all 105 unit tests, all 26 Chrome browser tests, the production build, and AIslop at **97/100**. Its full dependency audit failed on the known `braces` advisory. The workflow saved quality evidence and correctly skipped site upload and deployment. No successful deployment has been verified. The advisory needs a verified fix or an explicitly approved risk decision before changing that outcome.
 
 ## Browser coverage
 

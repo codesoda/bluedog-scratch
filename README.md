@@ -27,6 +27,7 @@ Starting the dev server or building prepares the tracking assets automatically. 
 - Orange-dog surprises with cooldown and drought protection. Missing one has no penalty.
 - Decorative parent cameos, ambient animation, and playful optional props.
 - One star per completed scene. Parent settings choose 1–15 stages per go, with 6 as the default.
+- An evenly spaced slot for each required star. Earned stars fill the slots; longer turns use two rows.
 - Scene changes without repeating the previous scene within a go.
 - A friendly turn-finished screen, camera stop, and a click-to-play-again button.
 - A centered patting hand and “Keep wiggling” prompt while scratching. Actual finger movement still earns progress.

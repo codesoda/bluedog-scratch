@@ -54,6 +54,7 @@ Own ONLY `js/audio.js`, `tests/unit/audio*.test.js`. Export `AudioManager` with 
 ## Approved follow-up contract
 
 - A stage is one complete scene: six blue-dog scratches award one star. A go defaults to six stages and allows 1–15 in parent settings. Changes apply to the next go; the active target is fixed until restart.
+- The star tray renders one evenly spaced slot per active target, in balanced rows of at most eight. Completed scenes fill the slots. Pending setting changes do not alter the current tray; replay resets it.
 - Snapshots add `completedStages` and `stagesTarget`. `GO_COMPLETE` follows the final celebration, freezes updates, and emits `goComplete` once. No hand is required to finish the celebration.
 - The finished screen offers a clickable “Play again” control. Completion releases the camera and both local previews. Replay resets progress and adopts the pending stage setting before requesting the camera again.
 - `go-controls.js` owns settings and finish/progress DOM. `hand-readiness.js` is a pure readiness gate: one second of steady tracking, then a three-second countdown. Loss, changed owner, or excessive movement resets it and prompts slow movement.

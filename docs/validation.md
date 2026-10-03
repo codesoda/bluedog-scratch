@@ -5,7 +5,7 @@
 The final `npm run check` passes:
 
 - **162 unit tests passed.** Zero failures and zero skipped tests. This includes 37 audit-policy cases.
-- **41 desktop Chrome browser tests passed.**
+- **47 desktop Chrome browser tests passed.**
 - **Production build passed.** The complete static bundle is in `dist/` (about 30 MB, including local inference assets).
 - **AIslop CI passed: 97–98/100 across the latest runs.** `.aislop/config.yml` retains `ci.failBelow: 95` and disables telemetry.
 - **The dependency audit has an unresolved development-only advisory.** It reports three high-severity dependency entries for the chain `aislop → micromatch → braces`. The actual advisory is [GHSA-vfj7-8cjw-p6xm](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm), affecting `braces` through 3.0.3. No patched version is listed. Audit responses vary between runs, including zero-result responses; those do not establish remediation. The production-only audit reports zero vulnerabilities.
@@ -59,6 +59,7 @@ Tests cover:
 - Lost-hand guidance appears in the center during paused interaction and clears on return.
 - Settings default to six whole scenes and allow 1–15. One completed scene awards one star.
 - Eight scenes require 48 scratches and end with eight stars. Setting changes apply to the next go.
+- Star slots match the active target, fill with earned stars, and reset on replay. Targets 1, 6, 8, and 15 have evenly spaced slots without per-frame DOM rebuilds. Fifteen slots fit narrow and short windows.
 - Finishing freezes progression and releases both previews. “Play again” resets progress and reacquires the camera.
 - The patting hand stays over the scratch target, restores the paw outside it, and respects reduced motion. Static pointers and jitter still cannot earn progress.
 - The guide stays available on narrow and short windows, including reduced-motion mode.
@@ -76,7 +77,7 @@ Tests cover:
 - Small feedback particles, reduced-motion feedback, narrow layouts, and mute preference persistence.
 - No third-party runtime requests in normal startup/debug play or worker-inference startup.
 
-Screenshots in `artifacts/` show the start screen, four revealed scenes, celebration, live hand finding, centered recovery guidance, patting feedback, and the turn-finished screen. Gameplay screenshots use deterministic opt-in debug input with diagnostic overlays hidden for visual inspection. They are not evidence of real-hand tracking.
+Screenshots in `artifacts/` show the start screen, four revealed scenes, celebration, live hand finding, centered recovery guidance, patting feedback, the 15-star tray, and the turn-finished screen. Gameplay screenshots use deterministic opt-in debug input with diagnostic overlays hidden for visual inspection. They are not evidence of real-hand tracking.
 
 ## Independent review and corrections
 

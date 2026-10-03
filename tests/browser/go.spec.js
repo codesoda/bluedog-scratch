@@ -63,6 +63,8 @@ test('eight completed scenes award eight stars, finish the go, and replay starts
   expect(midway.completedStages).toBe(7);
   expect(midway.stagesTarget).toBe(8);
   await expect(page.locator('#go-progress-label')).toHaveText('7 of 8 stars');
+  await expect(page.locator('.go-star')).toHaveCount(8);
+  await expect(page.locator('.go-star.is-earned')).toHaveCount(7);
   await expect(page.locator('#go-complete-overlay')).toBeHidden();
   const finished = await finishScenes(page, 1);
   expect(finished.completedStages).toBe(8);
@@ -83,6 +85,8 @@ test('eight completed scenes award eight stars, finish the go, and replay starts
   expect(next.sceneNumber).toBe(1);
   expect(next.paws).toBe(0);
   expect(next.bonusHits).toBe(0);
+  await expect(page.locator('.go-star')).toHaveCount(2);
+  await expect(page.locator('.go-star.is-earned')).toHaveCount(0);
 });
 
 test('setting changes apply to the next go, not the current turn', async ({ page }) => {
@@ -90,6 +94,7 @@ test('setting changes apply to the next go, not the current turn', async ({ page
   await setStages(page, 2);
   await page.evaluate(() => window.__BLUE_DOG__.start());
   await setStages(page, 1);
+  await expect(page.locator('.go-star')).toHaveCount(2);
   const first = await finishScenes(page, 1);
   expect(first.stagesTarget).toBe(2);
   expect(first.completedStages).toBe(1);
@@ -97,7 +102,56 @@ test('setting changes apply to the next go, not the current turn', async ({ page
   await finishScenes(page, 1);
   await page.locator('#play-again-button').click();
   expect((await page.evaluate(() => window.__BLUE_DOG__.snapshot())).stagesTarget).toBe(1);
+  await expect(page.locator('.go-star')).toHaveCount(1);
+  await expect(page.locator('.go-star.is-earned')).toHaveCount(0);
 });
+
+for (const target of [1, 6, 8, 15]) {
+  test(`${target} required stars have evenly spaced slots without per-frame rebuilds`, async ({ page }) => {
+    await page.goto('/?debug=true&input=mouse');
+    await setStages(page, target);
+    await page.evaluate(() => window.__BLUE_DOG__.start());
+    await expect(page.locator('#go-progress')).toBeVisible();
+    await expect(page.locator('.go-star')).toHaveCount(target);
+    await expect(page.locator('.go-star.is-earned')).toHaveCount(0);
+    const gaps = await page.locator('#go-star-slots').evaluate(container =>
+      Array.from(container.children).flatMap(row => {
+        const centers = Array.from(row.children).map(star => {
+          const box = star.getBoundingClientRect();
+          return box.x + box.width / 2;
+        });
+        const distances = centers.slice(1).map((center, index) => center - centers[index]);
+        return distances.length ? [Math.max(...distances) - Math.min(...distances)] : [];
+      }));
+    for (const difference of gaps) expect(difference).toBeLessThan(1);
+    expect(await page.evaluate(() => {
+      const first = document.querySelector('.go-star');
+      window.__BLUE_DOG__.step(0);
+      return document.querySelector('.go-star') === first;
+    })).toBe(true);
+    if (target === 15) {
+      await page.addStyleTag({ content: '#debug-panel, .layer-debug { display: none !important; }' });
+      await page.screenshot({ path: 'artifacts/star-slots-15.png' });
+    }
+  });
+}
+
+for (const viewport of [{ width: 390, height: 740 }, { width: 900, height: 500 }]) {
+  test(`15 star slots stay inside the frame at ${viewport.width} × ${viewport.height}`, async ({ page }) => {
+    await page.setViewportSize(viewport);
+    await page.goto('/?debug=true&input=mouse');
+    await setStages(page, 15);
+    await page.evaluate(() => window.__BLUE_DOG__.start());
+    const tray = await page.locator('#go-progress').boundingBox();
+    const frame = await page.locator('.game-frame').boundingBox();
+    expect(tray.x).toBeGreaterThanOrEqual(frame.x);
+    expect(tray.x + tray.width).toBeLessThanOrEqual(frame.x + frame.width);
+    for (const star of await page.locator('.go-star').all()) {
+      await expect(star).toBeInViewport();
+    }
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  });
+}
 
 test('finishing releases both previews and replay reacquires the camera', async ({ page }) => {
   await page.goto('/?debug=true&bonusRate=0&cameoRate=0');

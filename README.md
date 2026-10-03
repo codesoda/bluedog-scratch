@@ -59,13 +59,17 @@ The production build bundles JavaScript and serves inference assets from the sam
 
 ### GitHub Actions and Pages
 
-`.github/workflows/pages.yml` follows the reference games' checks-and-deploy pattern. Pull requests to `main`, pushes to `main`, and manual runs use Node.js 24 and locked dependencies. Checks run all unit tests, build the game, and test that build in Chrome, including local inference at a nested hosting path. AIslop must score at least **95**, and the dependency audit must find no vulnerabilities.
+`.github/workflows/pages.yml` follows the reference games' checks-and-deploy pattern. Pull requests to `main`, pushes to `main`, and manual runs use Node.js 24 and locked dependencies. Checks run all unit tests, build the game, and test that build in Chrome, including local inference at a nested hosting path. AIslop must score at least **95**. The production dependency audit must find no vulnerabilities. The full audit blocks every finding except the one approved, expiring development-only exception below.
 
 Only successful `main` runs can deploy. The workflow uploads the complete tested `dist/` directory and gives Pages permissions only to the deployment job. It keeps quality reports for 14 days and saves browser reports and traces on failure. Actions are pinned to the same commit versions as the reference games.
 
 To enable deployment in the GitHub repository, select **Settings → Pages → Build and deployment → Source → GitHub Actions**, then push to `main` or run the workflow. Relative asset paths support a repository site without hardcoding its name. The site needs HTTPS for camera access.
 
-The public repository is [codesoda/bluedog-scratch](https://github.com/codesoda/bluedog-scratch). Pages uses GitHub Actions and targets https://codesoda.github.io/bluedog-scratch/. That URL is not live until a deployment succeeds. The full audit currently reports an unpatched development-only `braces` advisory through AIslop; see `docs/validation.md`. The audit gate remains enabled.
+The public repository is [codesoda/bluedog-scratch](https://github.com/codesoda/bluedog-scratch). Pages uses GitHub Actions and targets https://codesoda.github.io/bluedog-scratch/. That URL is not live until a deployment succeeds.
+
+The owner approved a seven-day exception for **GHSA-vfj7-8cjw-p6xm**, only in the pinned development chain `aislop@0.16.1 → micromatch@4.0.8 → braces@3.0.3`. It expires on **10 October 2026 at 01:32:23 UTC**. The audit gate rejects new advisories, changed versions, extra installed copies, production findings, service errors, and expired approval. Raw audits and the policy result remain available as CI artifacts. See `docs/security/audit-exception.json` and `docs/validation.md`.
+
+Expiry blocks future checks and deployments while the affected dependency remains installed. It does not take down a site already deployed. The exception is accepted risk, not a dependency fix.
 
 The project owner approved public publication. This approval is not a character-rights clearance. Review character rights before wider distribution.
 
@@ -76,7 +80,8 @@ npm test
 npm run build
 npm run test:browser
 npm run check:quality
-# All gates, including AIslop:
+npm run check:audit
+# All gates, including AIslop and the audit policy:
 npm run check
 ```
 

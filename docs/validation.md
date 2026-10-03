@@ -4,13 +4,13 @@
 
 The final `npm run check` passes:
 
-- **105 unit tests passed.** Zero failures and zero skipped tests.
+- **142 unit tests passed.** Zero failures and zero skipped tests. This includes 37 audit-policy cases.
 - **26 desktop Chrome browser tests passed.**
 - **Production build passed.** The complete static bundle is in `dist/` (about 30 MB, including local inference assets).
 - **AIslop CI passed: 97–98/100 across the latest runs.** `.aislop/config.yml` retains `ci.failBelow: 95` and disables telemetry.
 - **The dependency audit has an unresolved development-only advisory.** It reports three high-severity dependency entries for the chain `aislop → micromatch → braces`. The actual advisory is [GHSA-vfj7-8cjw-p6xm](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm), affecting `braces` through 3.0.3. No patched version is listed. Audit responses vary between runs, including zero-result responses; those do not establish remediation. The production-only audit reports zero vulnerabilities.
 
-All five enabled AIslop engines ran. Three non-blocking maintainability warnings remain: the SVG scene-art file and renderer are large, and the character-rig constructor is long. The score is 97 when AIslop includes the development dependency advisory, and 98 when the audit response omits it. No rules, weights, thresholds, or application-source exclusions were weakened to pass the gate. Do not use `npm audit fix --force`: its suggested AIslop downgrade is not a verified fix.
+All five enabled AIslop engines ran. Three non-blocking maintainability warnings remain: the SVG scene-art file and renderer are large, and the character-rig constructor is long. The score is 97 when AIslop includes the development dependency advisory, and 98 when the audit response omits it. No AIslop rules, weights, thresholds, or application-source exclusions were weakened to pass its gate. Do not use `npm audit fix --force`: its suggested AIslop downgrade is not a verified fix.
 
 ## CI and Pages readiness
 
@@ -23,7 +23,11 @@ All five enabled AIslop engines ran. Three non-blocking maintainability warnings
 
 The project owner approved public publication. The public repository is `codesoda/bluedog-scratch`, and Pages is configured to use GitHub Actions. Its target URL is https://codesoda.github.io/bluedog-scratch/.
 
-[The first GitHub-hosted Linux run](https://github.com/codesoda/bluedog-scratch/actions/runs/37085874180) passed all 105 unit tests, all 26 Chrome browser tests, the production build, and AIslop at **97/100**. Its full dependency audit failed on the known `braces` advisory. The workflow saved quality evidence and correctly skipped site upload and deployment. No successful deployment has been verified. The advisory needs a verified fix or an explicitly approved risk decision before changing that outcome.
+[The first GitHub-hosted Linux run](https://github.com/codesoda/bluedog-scratch/actions/runs/37085874180) passed all 105 unit tests, all 26 Chrome browser tests, the production build, and AIslop at **97/100**. Its full dependency audit failed on the known `braces` advisory. The workflow saved quality evidence and correctly skipped site upload and deployment.
+
+The owner then approved a seven-day exception for this advisory only. `npm run check:audit` runs both full and production audits, saves their raw reports, and checks a fail-closed policy. The approval expires at **2026-10-10T01:32:23.453Z**. It permits only the exact development chain recorded in `docs/security/audit-exception.json`. New advisories, changed versions, additional installed copies, production findings, audit failures, malformed reports, and expired approval remain blocking. The policy enforces expiry for the affected installed version even when the audit service returns zero findings. This accepts risk; it does not fix the dependency.
+
+Expiry blocks future deployments, not an already deployed site. No successful deployment has been verified yet.
 
 ## Browser coverage
 

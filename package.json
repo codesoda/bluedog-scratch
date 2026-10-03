@@ -13,7 +13,8 @@
     "test": "node --test tests/unit/*.test.js",
     "test:browser": "playwright test",
     "check:quality": "aislop ci",
-    "check": "npm run prepare:tracking && npm test && npm run build && npm run test:browser && npm run check:quality"
+    "check:audit": "node scripts/audit-ci.mjs",
+    "check": "npm run prepare:tracking && npm test && npm run build && npm run test:browser && npm run check:quality && npm run check:audit"
   },
   "dependencies": {
     "@mediapipe/tasks-vision": "0.10.32"

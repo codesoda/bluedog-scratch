@@ -1,0 +1,12 @@
+{
+  "advisory": "GHSA-vfj7-8cjw-p6xm",
+  "approvedBy": "project-owner",
+  "approvedAt": "2026-10-03T01:32:23.453Z",
+  "expiresAt": "2026-10-10T01:32:23.453Z",
+  "reason": "Owner approved a seven-day exception for the unpatched development-only braces advisory. No runtime dependency or other advisory is exempt.",
+  "versions": {
+    "aislop": "0.16.1",
+    "micromatch": "4.0.8",
+    "braces": "3.0.3"
+  }
+}
